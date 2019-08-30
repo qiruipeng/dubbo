@@ -47,11 +47,11 @@ public class RandomLoadBalance extends AbstractLoadBalance {
     protected <T> Invoker<T> doSelect(List<Invoker<T>> invokers, URL url, Invocation invocation) {
         // Number of invokers
         int length = invokers.size();
-        // Every invoker has the same weight?
+        // Every invoker has the same weight?，作用就是判断提供者是否是大于1
         boolean sameWeight = true;
-        // the weight of every invokers
+        // 构建权重列表
         int[] weights = new int[length];
-        // the first invoker's weight
+        // 获取提供者列表的权重值，一般缺省都是100
         int firstWeight = getWeight(invokers.get(0), invocation);
         weights[0] = firstWeight;
         // The sum of weights
@@ -68,6 +68,9 @@ public class RandomLoadBalance extends AbstractLoadBalance {
         }
         if (totalWeight > 0 && !sameWeight) {
             // If (not every invoker has the same weight & at least one invoker's weight>0), select randomly based on totalWeight.
+            //以totalWeight拿到一个随机数，比如有5个提供者，就从0~400中随机
+            //为什么不ThreadLocalRandom.current().nextInt(length)然后invokers.get(i)
+            //应该是增大随机性，负载更好点
             int offset = ThreadLocalRandom.current().nextInt(totalWeight);
             // Return a invoker based on the random value.
             for (int i = 0; i < length; i++) {
@@ -78,6 +81,9 @@ public class RandomLoadBalance extends AbstractLoadBalance {
             }
         }
         // If all invokers have the same weight value or totalWeight=0, return evenly.
+        // 如果只有一个提供者或者totalWeight=0,
+        // 注意ThreadLocalRandom.current().nextInt(1)=0;
+        // 效率比random较高，这里length=1，也就是取list的第一个返回
         return invokers.get(ThreadLocalRandom.current().nextInt(length));
     }
 

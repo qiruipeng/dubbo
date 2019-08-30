@@ -71,6 +71,7 @@ public abstract class AbstractLoadBalance implements LoadBalance {
      * @return weight
      */
     int getWeight(Invoker<?> invoker, Invocation invocation) {
+        //从url参数总获取权重值，默认100
         int weight = invoker.getUrl().getMethodParameter(invocation.getMethodName(), WEIGHT_KEY, DEFAULT_WEIGHT);
         if (weight > 0) {
             long timestamp = invoker.getUrl().getParameter(TIMESTAMP_KEY, 0L);

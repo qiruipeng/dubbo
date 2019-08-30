@@ -26,6 +26,7 @@ import org.mockito.Mockito;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.apache.dubbo.common.constants.CommonConstants.TIMESTAMP_KEY;
 import static org.mockito.BDDMockito.given;
@@ -56,5 +57,11 @@ public class AbstractLoadBalanceTest {
         given(invoker2.getUrl()).willReturn(url2);
 
         Assertions.assertEquals(balance.getWeight(invoker1, invocation), balance.getWeight(invoker2, invocation));
+    }
+
+    @Test
+    public void testThreadLocalRandom(){
+        int offset = ThreadLocalRandom.current().nextInt(5);
+        System.out.println(offset);
     }
 }
